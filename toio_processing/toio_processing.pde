@@ -4,7 +4,7 @@ import deadpixel.keystone.*;
 Keystone ks;
 CornerPinSurface surface;
 PGraphics offscreen;
-int surfaceW = 820;
+int surfaceW = 410;
 int surfaceH = 410;
 
 //constants
@@ -35,8 +35,6 @@ NetAddress[] server;
 
 //we'll keep the cubes here
 Cube[] cubes;
-// array of PVectors to track vertex positions (toio 0-4 positions)
-PVector[] vertices;
 
 void settings() {
   fullScreen(P3D);
@@ -48,8 +46,6 @@ void setup() {
   server = new NetAddress[1];
   server[0] = new NetAddress("127.0.0.1", 3334);
 
-  // create PVector array
-  vertices = new PVector[nCubes];
   //create cubes
   cubes = new Cube[nCubes];
   for (int i = 0; i< nCubes; ++i) {
@@ -66,7 +62,6 @@ void setup() {
   check_connection();
   }
 
-  
   // keystone projection
   ks = new Keystone(this);
   surface = ks.createCornerPinSurface(surfaceW, surfaceH, 20);
@@ -82,36 +77,27 @@ void draw() {
   offscreen.background(255);
   offscreen.fill(0, 255, 0);
   offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
+
+  // render shape from toio positions
+  offscreen.fill(255, 253, 134);
+  offscreen.stroke(204, 201, 46);
+  offscreen.strokeWeight(4);
+
+  offscreen.beginShape();
+  for (int i = 0; i < nCubes; i++) {
+    cubes[i].checkActive(now);
+    
+    if (cubes[i].isActive) {
+      // map mat dimensions to the dimensions of the surface being projected onto
+      int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
+      int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
+      // draw a vertex
+      offscreen.vertex(pointX, pointY);
+    }
+    
+  }
+  offscreen.endShape();
   offscreen.endDraw();
-  background(0);
-  
-  // initial loop to get toio positions
-  for (int i = 0; i < nCubes; i++) {
-    cubes[i].checkActive(now);
-    
-    if (cubes[i].isActive) {
-      vertices[i] = new PVector(cubes[i].x, cubes[i].y);
-    }
-  }
-  
-  // subsequent loop to render shape from toio positions
-  for (int i = 0; i < nCubes; i++) {
-    cubes[i].checkActive(now);
-    
-    if (i == 0) {
-     offscreen.beginShape();
-    }
-    
-    if (cubes[i].isActive) {
-      vertex(vertices[i].x, vertices[i].y);
-    }
-    
-    if (i == nCubes - 1) {
-      offscreen.endShape();
-    }
-  }
   surface.render(offscreen);
-  
-  
-  
+
 }
