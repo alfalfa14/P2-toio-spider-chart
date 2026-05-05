@@ -83,6 +83,22 @@ void keyPressed() {
     cubes[0].midi(1, notes);
     break;
 
+  case 'c':
+    // enter/leave calibration mode, where surfaces can be warped 
+    // and moved
+    ks.toggleCalibration();
+    break;
+
+  case 'l':
+    // loads the saved layout
+    ks.load();
+    break;
+
+  case 's':
+    // saves the layout
+    ks.save();
+    break;
+
   default:
     break;
   }
