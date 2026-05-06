@@ -4,6 +4,7 @@ import deadpixel.keystone.*;
 Keystone ks;
 CornerPinSurface surface;
 PGraphics offscreen;
+PImage bg;
 int surfaceW = 410;
 int surfaceH = 410;
 
@@ -21,7 +22,7 @@ int yOffset;
 // 2. Run Processing Code FIRST, Then Run the Rust Code. After running the Rust Code, you should place the toio on the toio mat, then Processing should start showing the toio position.
 // 3. When you re-run the processing code, make sure to stop the rust code and toios to be disconnected (switch to Bluetooth stand-by mode [blue LED blinking]). If toios are taking time to disconnect, you can optionally turn off the toio and turn back on using the power button.
 // Optional: If the toio behavior is werid consider dropping the framerate (e.g. change from 30 to 10)
-// 
+//
 boolean WindowsMode = false; //When you enable this, it will check for connection with toio via Rust first, before starting void loop()
 
 int framerate = 30;
@@ -33,7 +34,7 @@ OscP5 oscP5;
 //where to send the commands to
 NetAddress[] server;
 
-//we'll keep the cubes here
+//we’ll keep the cubes here
 Cube[] cubes;
 
 void settings() {
@@ -56,7 +57,7 @@ void setup() {
   yOffset = matDimension[1] - 45;
 
   //do not send TOO MANY PACKETS
-  //we'll be updating the cubes every frame, so don't try to go too high
+  //we’ll be updating the cubes every frame, so don’t try to go too high
   frameRate(framerate);
   if(WindowsMode){
   check_connection();
@@ -66,27 +67,31 @@ void setup() {
   ks = new Keystone(this);
   surface = ks.createCornerPinSurface(surfaceW, surfaceH, 20);
   offscreen = createGraphics(surfaceW, surfaceH, P3D);
+  bg = loadImage(“bg.png”);
 }
+
 
 
 void draw() {
   long now = System.currentTimeMillis();
   PVector surfaceMouse = surface.getTransformedMouse();
-  
+
   offscreen.beginDraw();
-  offscreen.background(255);
+  offscreen.background(bg);
   offscreen.fill(0, 255, 0);
   offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
 
   // render shape from toio positions
-  offscreen.fill(255, 253, 134);
+  color c = color(255,253,134,127);
+  offscreen.fill(c);
+  offscreen.tint(255, 100);
   offscreen.stroke(204, 201, 46);
   offscreen.strokeWeight(4);
 
   offscreen.beginShape();
   for (int i = 0; i < nCubes; i++) {
     cubes[i].checkActive(now);
-    
+
     if (cubes[i].isActive) {
       // map mat dimensions to the dimensions of the surface being projected onto
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
@@ -94,10 +99,12 @@ void draw() {
       // draw a vertex
       offscreen.vertex(pointX, pointY);
     }
-    
+
   }
   offscreen.endShape();
   offscreen.endDraw();
+  background(0);
+
   surface.render(offscreen);
 
 }
