@@ -34,7 +34,7 @@ OscP5 oscP5;
 //where to send the commands to
 NetAddress[] server;
 
-//we’ll keep the cubes here
+//we'll keep the cubes here
 Cube[] cubes;
 
 void settings() {
@@ -57,17 +57,16 @@ void setup() {
   yOffset = matDimension[1] - 45;
 
   //do not send TOO MANY PACKETS
-  //we’ll be updating the cubes every frame, so don’t try to go too high
+  //we'll be updating the cubes every frame, so don't try to go too high
   frameRate(framerate);
-  if(WindowsMode){
-  check_connection();
+  if (WindowsMode) {
+    check_connection();
   }
 
   // keystone projection
   ks = new Keystone(this);
   surface = ks.createCornerPinSurface(surfaceW, surfaceH, 20);
   offscreen = createGraphics(surfaceW, surfaceH, P3D);
-  bg = loadImage("bg.png");
 }
 
 
@@ -77,12 +76,12 @@ void draw() {
   PVector surfaceMouse = surface.getTransformedMouse();
 
   offscreen.beginDraw();
-  surface.background(bg);
+  offscreen.background(255);
   offscreen.fill(0, 255, 0);
   offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
 
   // render shape from toio positions
-  color c = color(255,253,134,127);
+  color c = color(255, 253, 134, 127);
   offscreen.fill(c);
   offscreen.tint(255, 100);
   offscreen.stroke(204, 201, 46);
@@ -97,15 +96,12 @@ void draw() {
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
       int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
       // draw a vertex
-      
       offscreen.vertex(pointX, pointY);
     }
-
   }
   offscreen.endShape();
   offscreen.endDraw();
   background(0);
 
   surface.render(offscreen);
-
 }
