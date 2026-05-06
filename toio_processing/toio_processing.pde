@@ -227,6 +227,10 @@ void draw() {
   long now = System.currentTimeMillis();
   PVector surfaceMouse = surface.getTransformedMouse();
   
+  if (mousePressed == true) {
+    p++;
+  }
+  
   projectData();
 
   offscreen.beginDraw();
