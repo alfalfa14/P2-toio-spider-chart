@@ -189,7 +189,7 @@ void projectData() {
     float endX = 0;
     float endY = 0;
     
-    // 0 - sho, 1 - drib, 2 - pac, 3 - pas, 4 - def
+    // 0 - shooting, 1 - dribbling, 2 - pace, 3 - passing, 4 - defense
     switch(i) {
       case 0:
         endX = map(sho[p], 0, 100, cx, px);
@@ -228,13 +228,14 @@ void draw() {
   PVector surfaceMouse = surface.getTransformedMouse();
   
   if (mousePressed == true) {
-    p++;
+    p = int(random(0, 17000));
   }
   
   projectData();
 
   offscreen.beginDraw();
-
+  String text = "Player: " + player[p] + " Rank: " + rank[p];
+  offscreen.text(text, surfaceW/2, 380);
   // Draw the UI background
   drawBackground();
   
