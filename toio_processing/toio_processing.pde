@@ -75,92 +75,67 @@ void setup() {
   // fonts
   regularFont = createFont("Arial", 13);
   boldFont = createFont("Arial Bold", 13);
-
-  bg = loadImage("bg.png");
 }
 
 void drawBackground() {
   offscreen.background(255, 199, 226); // pink background
+  
+  // circle center positioning
+  float cx = surfaceW / 2;
+  float cy = 200;
 
-  float cx = surfaceW / 2 - 105;   // move left
-  float cy = 75;                 // move up
+  float circleSize = 300;
+  float r = circleSize/2;
 
-  float r = 45;
-  float circleSize = 90;
-
-  // Main white circle
+  // main white circle
   offscreen.fill(255);
   offscreen.noStroke();
   offscreen.ellipse(cx, cy, circleSize, circleSize);
 
-  // Grey stat lines
+  // stat lines
   offscreen.stroke(190);
-  offscreen.strokeWeight(2);
+  offscreen.strokeWeight(3);
 
-  offscreen.line(cx, cy, cx, cy - r);           // Shooting
-  offscreen.line(cx, cy, cx + 43, cy - 14);     // Dribbling
-  offscreen.line(cx, cy, cx + 27, cy + 37);     // Pace
-  offscreen.line(cx, cy, cx - 27, cy + 37);     // Passing
-  offscreen.line(cx, cy, cx - 43, cy - 14);     // Defending
+  // angles for 5 stats (in radians)
+  float[] angles = {
+    radians(-90),   // Shooting (top)
+    radians(-18),   // Dribbling
+    radians(54),    // Pace
+    radians(126),   // Passing
+    radians(198)    // Defending
+  };
 
-  // Center point
-  offscreen.fill(0);
-  offscreen.noStroke();
-  offscreen.ellipse(cx, cy, 6, 6);
+  for (int i = 0; i < angles.length; i++) {
+    float x2 = cx + cos(angles[i]) * r;
+    float y2 = cy + sin(angles[i]) * r;
 
-  // Labels
+    offscreen.line(cx, cy, x2, y2);
+  }
+
   offscreen.fill(0);
   offscreen.noStroke();
   offscreen.textAlign(CENTER, CENTER);
   offscreen.textFont(regularFont);
   offscreen.textSize(7);
 
-  offscreen.text("Shooting", cx, cy - 58);
-  offscreen.text("Dribbling", cx + 67, cy - 14);
-  offscreen.text("Pace", cx + 38, cy + 48);
-  offscreen.text("Passing", cx - 47, cy + 48);
-  offscreen.text("Defending", cx - 67, cy - 14);
+  String[] labels = {
+    "Shooting",
+    "Dribbling",
+    "Pace",
+    "Passing",
+    "Defending"
+  };
 
-  // Instruction text
-  offscreen.textFont(boldFont);
-  offscreen.textSize(8);
-  offscreen.text("Select your player to view data:", cx, 225);
+  // distance slightly larger than radius so text sits outside circle
+  float labelRadius = r + 20;
 
-  // Buttons
-  offscreen.textSize(8);
-  offscreen.text("MENU", 75, 267);
-  offscreen.text("SELECT", 295, 267);
+  for (int i = 0; i < angles.length; i++) {
+    float tx = cx + cos(angles[i]) * labelRadius;
+    float ty = cy + sin(angles[i]) * labelRadius;
 
-  offscreen.noFill();
-  offscreen.strokeWeight(2);
-
-  // Menu circle
-  offscreen.stroke(255, 204, 0);
-  offscreen.ellipse(75, 295, 30, 30);
-
-  // Select circle
-  offscreen.stroke(0, 140, 60);
-  offscreen.ellipse(295, 295, 30, 30);
-
-  // Center rotate button
-  offscreen.fill(255);
-  offscreen.noStroke();
-  offscreen.ellipse(cx, 295, 45, 45);
-
-  // Rotate symbol
-  offscreen.fill(0);
-  offscreen.textFont(regularFont);
-  offscreen.textSize(24);
-  offscreen.text("↻", cx, 292);
-
-  // Bottom instruction
-  offscreen.textFont(boldFont);
-  offscreen.textSize(7);
-  offscreen.text("Rotate Toio to Change Player", cx, 338);
-
-  offscreen.textFont(regularFont);
+    offscreen.text(labels[i], tx, ty);
+  }
 }
-
 
 void draw() {
   long now = System.currentTimeMillis();
@@ -171,12 +146,7 @@ void draw() {
   // Draw the UI background
   drawBackground();
 
-  // Optional mouse test circle
-  // offscreen.fill(0, 255, 0);
-  // offscreen.noStroke();
-  // offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
-
-  // Render shape from toio positions
+  // render shape from toio positions
   color c = color(255, 253, 134, 127);
   offscreen.fill(c);
   offscreen.tint(255, 100);
@@ -184,19 +154,31 @@ void draw() {
   offscreen.strokeWeight(4);
 
   offscreen.beginShape();
+  int firstX = 0;
+  int firstY = 0;
 
   for (int i = 0; i < nCubes; i++) {
     cubes[i].checkActive(now);
 
     if (cubes[i].isActive) {
+
       // map mat dimensions to the dimensions of the surface being projected onto
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
       int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
 
+      if (i == 0) {
+        firstX = pointX;
+        firstY = pointY;
+      }
+
       // draw a vertex
       offscreen.vertex(pointX, pointY);
+
+      if (i == nCubes - 1) {
+        offscreen.vertex(firstX, firstY);
+      }
     }
-x  }
+ }
 
   offscreen.endShape();
   offscreen.endDraw();
