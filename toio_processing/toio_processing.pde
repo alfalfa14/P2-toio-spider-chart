@@ -42,6 +42,53 @@ NetAddress[] server;
 // keep the cubes here
 Cube[] cubes;
 
+// data processing
+Table table;
+int dataNum = 0;
+int loadingFileID = 0;
+int maxLoadingFileNum = 0;
+String[] player;
+int[] rank;
+int[] ovr;
+int[] sho;
+int[] dri;
+int[] pac;
+int[] pas;
+int[] def;
+
+void loadData() { // this is called only in setup
+  // Load CSV file into a Table object
+  // "header" option indicates the file has a header row
+  
+  table = loadTable("data/EAFC26.csv", "header"); //you can manually type in file name, which will access under the "data" folder
+  
+  dataNum = table.getRowCount(); //Get the number of row
+  println("dataNum is " + dataNum);  // Print the number of row
+  
+  //prepare array according to the number of row/data
+  player = new String [dataNum];
+  rank = new int [dataNum];
+  ovr = new int [dataNum];
+  sho = new int [dataNum];
+  dri = new int [dataNum];
+  pac = new int [dataNum];
+  pas = new int [dataNum];
+  def = new int [dataNum];
+
+  int rowCount = 0;
+  for (TableRow row : table.rows()) {
+    player[rowCount] = row.getString("Name");
+    rank[rowCount] = row.getInt("Rank");
+    ovr[rowCount] = row.getInt("OVR");
+    sho[rowCount] = row.getInt("SHO");
+    dri[rowCount] = row.getInt("DRI");
+    pac[rowCount] = row.getInt("PAC");
+    pas[rowCount] = row.getInt("PAS");
+    def[rowCount] = row.getInt("DEF");
+    rowCount++;
+  }
+}
+
 void settings() {
   fullScreen(P3D);
 }
@@ -75,6 +122,7 @@ void setup() {
   // fonts
   regularFont = createFont("Arial", 13);
   boldFont = createFont("Arial Bold", 13);
+  loadData();
 }
 
 void drawBackground() {
@@ -98,11 +146,11 @@ void drawBackground() {
 
   // angles for 5 stats (in radians)
   float[] angles = {
-    radians(-90),   // Shooting (top)
-    radians(-18),   // Dribbling
-    radians(54),    // Pace
-    radians(126),   // Passing
-    radians(198)    // Defending
+    radians(-90),   // shooting (top)
+    radians(-18),   // dribbling
+    radians(54),    // pace
+    radians(126),   // passing
+    radians(198)    // defending
   };
 
   for (int i = 0; i < angles.length; i++) {
@@ -116,7 +164,7 @@ void drawBackground() {
   offscreen.noStroke();
   offscreen.textAlign(CENTER, CENTER);
   offscreen.textFont(regularFont);
-  offscreen.textSize(7);
+  offscreen.textSize(12);
 
   String[] labels = {
     "Shooting",
@@ -165,7 +213,8 @@ void draw() {
       // map mat dimensions to the dimensions of the surface being projected onto
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
       int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
-
+      
+      // store the first vertex we draw
       if (i == 0) {
         firstX = pointX;
         firstY = pointY;
@@ -173,7 +222,8 @@ void draw() {
 
       // draw a vertex
       offscreen.vertex(pointX, pointY);
-
+      
+      // draw to the first vertex again so the shape closes
       if (i == nCubes - 1) {
         offscreen.vertex(firstX, firstY);
       }
