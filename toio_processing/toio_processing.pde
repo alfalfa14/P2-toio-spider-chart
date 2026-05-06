@@ -186,34 +186,37 @@ void projectData() {
   for (int i = 0; i < angles.length; i++) {
     float px = cx + cos(angles[i]) * r;
     float py = cy + sin(angles[i]) * r;
-    float tx = 0;
-    float ty = 0;
+    float endX = 0;
+    float endY = 0;
     
     // 0 - sho, 1 - drib, 2 - pac, 3 - pas, 4 - def
     switch(i) {
       case 0:
-        tx = map(sho[p], 0, 100, cx, px);
-        ty = map(sho[p], 0, 100, cy, py);
+        endX = map(sho[p], 0, 100, cx, px);
+        endY = map(sho[p], 0, 100, cy, py);
         break;
       case 1:
-        tx = map(dri[p], 0, 100, cx, px);
-        ty = map(dri[p], 0, 100, cy, py);
+        endX = map(dri[p], 0, 100, cx, px);
+        endY = map(dri[p], 0, 100, cy, py);
         break;
       case 2:
-        tx = map(pac[p], 0, 100, cx, px);
-        ty = map(pac[p], 0, 100, cy, py);
+        endX = map(pac[p], 0, 100, cx, px);
+        endY = map(pac[p], 0, 100, cy, py);
         break;
       case 3:
-        tx = map(pas[p], 0, 100, cx, px);
-        ty = map(pas[p], 0, 100, cy, py);
+        endX = map(pas[p], 0, 100, cx, px);
+        endY = map(pas[p], 0, 100, cy, py);
         break;
       case 4:
-        tx = map(def[p], 0, 100, cx, px);
-        ty = map(def[p], 0, 100, cy, py);
+        endX = map(def[p], 0, 100, cx, px);
+        endY = map(def[p], 0, 100, cy, py);
         break;
       default:
         break;
     }
+    
+    int tx = int(map(endX, matDimension[0], matDimension[2], 0, surfaceW));
+    int ty = int(map(endY, matDimension[1], matDimension[3], 0, surfaceH));
     
     cubes[i].target(int(tx), int(ty), cubes[i].theta);
     
