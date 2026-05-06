@@ -97,6 +97,7 @@ void draw() {
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
       int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
       // draw a vertex
+      
       offscreen.vertex(pointX, pointY);
     }
 
