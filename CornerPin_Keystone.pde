@@ -2,7 +2,7 @@ import deadpixel.keystone.*;
 Keystone ks;
 CornerPinSurface surface;
 PGraphics offscreen;
-int width = 820;
+int width = 410;
 int height = 410;
 
 void setup() {
@@ -13,9 +13,6 @@ void setup() {
 }
 
 void draw() {
-  // Convert the mouse coordinate into surface coordinates
-  // this will allow you to use mouse events inside the 
-  // surface from your screen. 
   PVector surfaceMouse = surface.getTransformedMouse();
   
   offscreen.beginDraw();
