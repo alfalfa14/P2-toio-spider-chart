@@ -215,8 +215,8 @@ void projectData() {
         break;
     }
     
-    int tx = int(map(endX, matDimension[0], matDimension[2], 0, surfaceW));
-    int ty = int(map(endY, matDimension[1], matDimension[3], 0, surfaceH));
+    int tx = int(map(endX, 0, surfaceW, matDimension[0], matDimension[2]));
+    int ty = int(map(endY, 0, surfaceH, matDimension[1], matDimension[3]));
     
     cubes[i].target(int(tx), int(ty), cubes[i].theta);
     
