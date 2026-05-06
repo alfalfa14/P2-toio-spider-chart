@@ -59,8 +59,7 @@ float[] angles = {
 
 int p = 0;
 
-// -------- MENU FEATURE --------
-
+// menu vars
 boolean showingMenu = true;
 boolean playerSelected = false;
 
@@ -79,7 +78,7 @@ int PAC_CUBE = 2;
 int PAS_CUBE = 3;
 int DEF_CUBE = 4;
 
-// ---------------- DATA ----------------
+// data processing
 
 void loadData() {
   table = loadTable("data/EAFC26.csv", "header");
@@ -111,7 +110,7 @@ void loadData() {
   }
 }
 
-// ---------------- SETUP ----------------
+// setup
 
 void settings() {
   fullScreen(P3D);
@@ -150,7 +149,7 @@ void setup() {
   loadData();
 }
 
-// ---------------- DRAW MAIN BACKGROUND ----------------
+// main background
 
 void drawBackground() {
   offscreen.background(255, 199, 226);
@@ -191,7 +190,7 @@ void drawBackground() {
   }
 }
 
-// ---------------- PROJECT DATA TO TOIOS ----------------
+// project data to toios
 
 void projectData() {
   p = selectedRow;
@@ -239,7 +238,6 @@ void projectData() {
   }
 }
 
-// ---------------- MAIN DRAW ----------------
 
 void draw() {
   long now = System.currentTimeMillis();
@@ -269,7 +267,7 @@ void draw() {
   updatePreviousButtons();
 }
 
-// ---------------- MENU ----------------
+// draw the menu
 
 void drawMenu() {
   offscreen.background(255, 199, 226);
@@ -332,7 +330,7 @@ void drawMenu() {
   offscreen.text((selectedRow + 1) + " / " + dataNum, surfaceW / 2, 395);
 }
 
-// ---------------- CONTROLS ----------------
+// controls
 
 void handleControls() {
   if (showingMenu && cubeClicked(UP_CUBE)) {
@@ -376,7 +374,7 @@ void updatePreviousButtons() {
   }
 }
 
-// ---------------- SPIDER CHART ----------------
+// draw chart
 
 void drawSpiderChartFromToios() {
   color c = color(255, 253, 134, 127);
@@ -399,7 +397,7 @@ void drawSpiderChartFromToios() {
   offscreen.endShape(CLOSE);
 }
 
-// ---------------- PLAYER TEXT ----------------
+// draw selected player text
 
 void drawSelectedPlayerText() {
   offscreen.fill(0);
