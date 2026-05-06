@@ -56,6 +56,18 @@ int[] pac;
 int[] pas;
 int[] def;
 
+// circle center positioning
+float cx = surfaceW / 2;
+float cy = 200;
+float circleSize = 300;
+float r = circleSize/2;
+
+// data angles -- sho, dri, pac, pas, def
+float[] angles = {radians(-90), radians(-18), radians(54), radians(126), radians(198)};
+
+// index of player that we are seeing the stats of
+int p = 0;
+
 void loadData() { // this is called only in setup
   // Load CSV file into a Table object
   // "header" option indicates the file has a header row
@@ -127,13 +139,6 @@ void setup() {
 
 void drawBackground() {
   offscreen.background(255, 199, 226); // pink background
-  
-  // circle center positioning
-  float cx = surfaceW / 2;
-  float cy = 200;
-
-  float circleSize = 300;
-  float r = circleSize/2;
 
   // main white circle
   offscreen.fill(255);
@@ -143,15 +148,6 @@ void drawBackground() {
   // stat lines
   offscreen.stroke(190);
   offscreen.strokeWeight(3);
-
-  // angles for 5 stats (in radians)
-  float[] angles = {
-    radians(-90),   // shooting (top)
-    radians(-18),   // dribbling
-    radians(54),    // pace
-    radians(126),   // passing
-    radians(198)    // defending
-  };
 
   for (int i = 0; i < angles.length; i++) {
     float x2 = cx + cos(angles[i]) * r;
@@ -175,7 +171,7 @@ void drawBackground() {
   };
 
   // distance slightly larger than radius so text sits outside circle
-  float labelRadius = r + 20;
+  float labelRadius = r + 30;
 
   for (int i = 0; i < angles.length; i++) {
     float tx = cx + cos(angles[i]) * labelRadius;
@@ -185,15 +181,56 @@ void drawBackground() {
   }
 }
 
+void projectData() {
+  // the max for the map is the full length 
+  for (int i = 0; i < angles.length; i++) {
+    float px = cx + cos(angles[i]) * r;
+    float py = cy + sin(angles[i]) * r;
+    float tx = 0;
+    float ty = 0;
+    
+    // 0 - sho, 1 - drib, 2 - pac, 3 - pas, 4 - def
+    switch(i) {
+      case 0:
+        tx = map(sho[p], 0, 100, cx, px);
+        ty = map(sho[p], 0, 100, cy, py);
+        break;
+      case 1:
+        tx = map(dri[p], 0, 100, cx, px);
+        ty = map(dri[p], 0, 100, cy, py);
+        break;
+      case 2:
+        tx = map(pac[p], 0, 100, cx, px);
+        ty = map(pac[p], 0, 100, cy, py);
+        break;
+      case 3:
+        tx = map(pas[p], 0, 100, cx, px);
+        ty = map(pas[p], 0, 100, cy, py);
+        break;
+      case 4:
+        tx = map(def[p], 0, 100, cx, px);
+        ty = map(def[p], 0, 100, cy, py);
+        break;
+      default:
+        break;
+    }
+    
+    cubes[i].target(int(tx), int(ty), cubes[i].theta);
+    
+  }
+}
+
 void draw() {
   long now = System.currentTimeMillis();
   PVector surfaceMouse = surface.getTransformedMouse();
+  
+  projectData();
 
   offscreen.beginDraw();
 
   // Draw the UI background
   drawBackground();
-
+  
   // render shape from toio positions
   color c = color(255, 253, 134, 127);
   offscreen.fill(c);
@@ -229,7 +266,6 @@ void draw() {
       }
     }
  }
-
   offscreen.endShape();
   offscreen.endDraw();
 
