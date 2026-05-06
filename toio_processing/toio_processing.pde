@@ -67,7 +67,7 @@ void setup() {
   ks = new Keystone(this);
   surface = ks.createCornerPinSurface(surfaceW, surfaceH, 20);
   offscreen = createGraphics(surfaceW, surfaceH, P3D);
-  bg = loadImage(“bg.png”);
+  bg = loadImage("bg.png");
 }
 
 
