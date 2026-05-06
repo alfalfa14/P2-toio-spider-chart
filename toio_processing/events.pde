@@ -1,6 +1,30 @@
 //execute code on key pressed
 void keyPressed() {
-
+    if (key == 'm' || key == 'M') {
+      showingMenu = !showingMenu;
+      playerSelected = !showingMenu;
+   }
+  
+    if (showingMenu && keyCode == UP) {
+      selectedRow--;
+  
+      if (selectedRow < 0) {
+        selectedRow = dataNum - 1;
+   }
+   }
+  
+    if (showingMenu && keyCode == DOWN) {
+      selectedRow++;
+  
+      if (selectedRow >= dataNum) {
+        selectedRow = 0;
+   }
+   }
+  
+    if (showingMenu && keyCode == ENTER) {
+      showingMenu = false;
+      playerSelected = true;
+  }
   switch(key) {
   case '1': //raw motor control
 
