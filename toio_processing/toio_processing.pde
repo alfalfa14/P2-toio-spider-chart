@@ -10,8 +10,8 @@ PImage bg;
 PFont regularFont;
 PFont boldFont;
 
-int surfaceW = 820;
-int surfaceH = 820;
+int surfaceW = 410;
+int surfaceH = 410;
 
 int nCubes = 8;
 int shapeCubes = 5;
