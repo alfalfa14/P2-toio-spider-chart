@@ -10,10 +10,11 @@ PImage bg;
 PFont regularFont;
 PFont boldFont;
 
-int surfaceW = 410;
-int surfaceH = 410;
+int surfaceW = 820;
+int surfaceH = 820;
 
-int nCubes = 5;
+int nCubes = 8;
+int shapeCubes = 5;
 int cubesPerHost = 12;
 int maxMotorSpeed = 115;
 int xOffset;
@@ -57,7 +58,11 @@ float[] angles = {
   radians(198)
 };
 
+// player index
 int p = 0;
+
+// bool to determine if cubes need a signal to move or not
+boolean needsUpdate = true;
 
 // menu vars
 boolean showingMenu = true;
@@ -68,15 +73,14 @@ int visibleRows = 8;
 
 boolean[] prevButton;
 
-int MENU_CUBE = 0;
-int UP_CUBE = 1;
-int DOWN_CUBE = 2;
-
 int SHO_CUBE = 0;
 int DRI_CUBE = 1;
 int PAC_CUBE = 2;
 int PAS_CUBE = 3;
 int DEF_CUBE = 4;
+int MENU_CUBE = 5;
+int UP_CUBE = 6;
+int DOWN_CUBE = 7;
 
 // data processing
 
@@ -113,7 +117,8 @@ void loadData() {
 // setup
 
 void settings() {
-  fullScreen(P3D);
+  fullScreen(P3D, 2);
+  pixelDensity(1);
 }
 
 void setup() {
@@ -193,6 +198,7 @@ void drawBackground() {
 // project data to toios
 
 void projectData() {
+
   p = selectedRow;
 
   for (int i = 0; i < angles.length; i++) {
@@ -236,6 +242,37 @@ void projectData() {
       cubes[i].target(tx, ty, cubes[i].theta);
     }
   }
+  needsUpdate = false;
+}
+
+void moveStatCubesToMenuEdges() {
+  int[] statCubes = {
+    SHO_CUBE,
+    DRI_CUBE,
+    PAC_CUBE,
+    PAS_CUBE,
+    DEF_CUBE
+  };
+
+  int margin = 35;
+
+  for (int i = 0; i < statCubes.length; i++) {
+    int cubeID = statCubes[i];
+
+    float surfaceX = cx + cos(angles[i]) * (r + 55);
+    float surfaceY = cy + sin(angles[i]) * (r + 55);
+
+    surfaceX = constrain(surfaceX, margin, surfaceW - margin);
+    surfaceY = constrain(surfaceY, margin, surfaceH - margin);
+
+    int targetMatX = int(map(surfaceX, 0, surfaceW, matDimension[0], matDimension[2]));
+    int targetMatY = int(map(surfaceY, 0, surfaceH, matDimension[1], matDimension[3]));
+
+    if (cubes[cubeID].isActive && cubes[cubeID].x != targetMatX + 5 && cubes[cubeID].y != targetMatY) {
+      cubes[cubeID].target(targetMatX, targetMatY, cubes[cubeID].theta);
+    }
+  }
+  needsUpdate = false;
 }
 
 
@@ -252,8 +289,13 @@ void draw() {
 
   if (showingMenu) {
     drawMenu();
+    if (needsUpdate) {
+      moveStatCubesToMenuEdges();
+    }
   } else {
-    projectData();
+    if (needsUpdate) {
+      projectData();
+    }
     drawBackground();
     drawSpiderChartFromToios();
     drawSelectedPlayerText();
@@ -280,9 +322,9 @@ void drawMenu() {
   offscreen.text("Select Player", surfaceW / 2, 35);
 
   offscreen.textFont(regularFont);
-  offscreen.textSize(10);
-  offscreen.text("Cube 1 = up | Cube 2 = down", surfaceW / 2, 62);
-  offscreen.text("Click Cube 0 to select / open menu", surfaceW / 2, 78);
+  offscreen.textSize(14);
+  //offscreen.text("Cube 1 = up | Cube 2 = down", surfaceW / 2, 62);
+  //offscreen.text("Click Cube 0 to select / open menu", surfaceW / 2, 78);
 
   int rowH = 31;
   int startRow = selectedRow - visibleRows / 2;
@@ -319,13 +361,13 @@ void drawMenu() {
       offscreen.fill(0);
       offscreen.noStroke();
       offscreen.textFont(regularFont);
-      offscreen.textSize(11);
+      offscreen.textSize(12);
       offscreen.text(player[rowIndex], surfaceW / 2, y);
     }
   }
 
   offscreen.textFont(regularFont);
-  offscreen.textSize(9);
+  offscreen.textSize(12);
   offscreen.fill(0);
   offscreen.text((selectedRow + 1) + " / " + dataNum, surfaceW / 2, 395);
 }
@@ -353,9 +395,11 @@ void handleControls() {
     if (showingMenu) {
       showingMenu = false;
       playerSelected = true;
+      needsUpdate = true;
     } else {
       showingMenu = true;
       playerSelected = false;
+      needsUpdate = true;
     }
   }
 }
@@ -385,7 +429,7 @@ void drawSpiderChartFromToios() {
 
   offscreen.beginShape();
 
-  for (int i = 0; i < nCubes; i++) {
+  for (int i = 0; i < shapeCubes; i++) {
     if (cubes[i].isActive) {
       float pointX = map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW);
       float pointY = map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH);
@@ -406,10 +450,10 @@ void drawSelectedPlayerText() {
 
   offscreen.textFont(boldFont);
   offscreen.textSize(14);
-  offscreen.text(player[selectedRow], surfaceW / 2, 340);
+  offscreen.text(player[selectedRow], surfaceW / 2, 360);
 
   offscreen.textFont(regularFont);
-  offscreen.textSize(10);
+  offscreen.textSize(12);
 
   String statText =
     "Rank " + rank[selectedRow] +
