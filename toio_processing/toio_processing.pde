@@ -80,9 +80,6 @@ int DRI_CUBE = 1;
 int PAC_CUBE = 2;
 int PAS_CUBE = 3;
 int DEF_CUBE = 4;
-int MENU_CUBE = 5;
-int UP_CUBE = 6;
-int DOWN_CUBE = 7;
 
 // menu control cubes
 int SELECT_CUBE = 5;
@@ -503,18 +500,10 @@ void drawSpiderChartFromToios() {
     DEF_CUBE
   };
 
-  for (int i = 0; i < statCubes.length; i++) {
-    int cubeID = statCubes[i];
-
-    if (cubes[cubeID].isActive) {
-      float pointX = map(cubes[cubeID].x, matDimension[0], matDimension[2], 0, surfaceW);
-      float pointY = map(cubes[cubeID].y, matDimension[1], matDimension[3], 0, surfaceH);
-
-      offscreen.vertex(pointX, pointY);
-    }
-  }
 
   offscreen.endShape(CLOSE);
+  }
+ }
 }
 
 // draw selected player text
