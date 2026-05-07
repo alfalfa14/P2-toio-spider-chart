@@ -134,11 +134,6 @@ class Cube {
     buttonDown(id);
     buttonDown = true;
     //insert code here
-    if (id == 0) {
-      int targetX = int(random(98 + 60, 402 - 60));
-      int targetY = int(random(142 + 60,  358 - 60));
-      target(targetX, targetY, theta);
-    }
   }
   
   //Execute this code on button release

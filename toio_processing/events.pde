@@ -130,9 +130,6 @@ void keyPressed() {
 
 //execute code when mouse is pressed
 void mousePressed() {
-  if (mouseX > 45 && mouseX < matDimension[2] - xOffset && mouseY > 45 && mouseY < matDimension[2] - yOffset) {
-    cubes[0].target(mouseX, mouseY, 0);
-  }
 
   //insert code here;
 }

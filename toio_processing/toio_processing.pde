@@ -14,10 +14,7 @@ int surfaceW = 410;
 int surfaceH = 410;
 
 int nCubes = 8;
-<<<<<<< Updated upstream
 int shapeCubes = 5;
-=======
->>>>>>> Stashed changes
 int cubesPerHost = 12;
 int maxMotorSpeed = 115;
 int xOffset;
@@ -64,12 +61,9 @@ float[] angles = {
 // player index
 int p = 0;
 
-<<<<<<< Updated upstream
 // bool to determine if cubes need a signal to move or not
 boolean needsUpdate = true;
 
-=======
->>>>>>> Stashed changes
 // menu vars
 boolean showingMenu = true;
 boolean playerSelected = false;
@@ -79,10 +73,8 @@ int visibleRows = 8;
 
 boolean[] prevButton;
 
-<<<<<<< Updated upstream
-=======
+
 // stat cubes
->>>>>>> Stashed changes
 int SHO_CUBE = 0;
 int DRI_CUBE = 1;
 int PAC_CUBE = 2;
@@ -92,8 +84,6 @@ int MENU_CUBE = 5;
 int UP_CUBE = 6;
 int DOWN_CUBE = 7;
 
-<<<<<<< Updated upstream
-=======
 // menu control cubes
 int SELECT_CUBE = 5;
 int MENU_CUBE = 6;
@@ -105,7 +95,6 @@ boolean scrollThetaInitialized = false;
 int lastRotateTime = 0;
 int rotateCooldown = 300;
 
->>>>>>> Stashed changes
 // data processing
 
 void loadData() {
@@ -219,12 +208,7 @@ void drawBackground() {
   }
 }
 
-<<<<<<< Updated upstream
-// project data to toios
-=======
 // project data to stat toios
->>>>>>> Stashed changes
-
 void projectData() {
 
   p = selectedRow;
@@ -313,11 +297,7 @@ void moveStatCubesToMenuEdges() {
   needsUpdate = false;
 }
 
-<<<<<<< Updated upstream
-=======
 // main draw
->>>>>>> Stashed changes
-
 void draw() {
   long now = System.currentTimeMillis();
 
@@ -351,12 +331,7 @@ void draw() {
   updatePreviousButtons();
 }
 
-<<<<<<< Updated upstream
 // draw the menu
-=======
-// draw menu
->>>>>>> Stashed changes
-
 void drawMenu() {
   offscreen.background(255, 199, 226);
 
@@ -368,15 +343,12 @@ void drawMenu() {
   offscreen.text("Select Player", surfaceW / 2, 35);
 
   offscreen.textFont(regularFont);
-<<<<<<< Updated upstream
   offscreen.textSize(14);
   //offscreen.text("Cube 1 = up | Cube 2 = down", surfaceW / 2, 62);
   //offscreen.text("Click Cube 0 to select / open menu", surfaceW / 2, 78);
-=======
   offscreen.textSize(10);
   offscreen.text("Rotate Cube 7 to scroll players", surfaceW / 2, 62);
   offscreen.text("Cube 5 = select | Cube 6 = menu", surfaceW / 2, 78);
->>>>>>> Stashed changes
 
   int rowH = 31;
   int startRow = selectedRow - visibleRows / 2;
@@ -430,7 +402,6 @@ void handleControls() {
   detectScrollTwist();
 
   if (cubeClicked(MENU_CUBE)) {
-<<<<<<< Updated upstream
     if (showingMenu) {
       showingMenu = false;
       playerSelected = true;
@@ -440,10 +411,8 @@ void handleControls() {
       playerSelected = false;
       needsUpdate = true;
     }
-=======
     showingMenu = !showingMenu;
     playerSelected = !showingMenu;
->>>>>>> Stashed changes
   }
 
   if (showingMenu && cubeClicked(SELECT_CUBE)) {
@@ -510,14 +479,7 @@ void updatePreviousButtons() {
   }
 }
 
-<<<<<<< Updated upstream
-=======
-// keyboard backup controls
-
-
->>>>>>> Stashed changes
 // draw chart
-
 void drawSpiderChartFromToios() {
   color c = color(255, 253, 134, 127);
 
@@ -527,12 +489,12 @@ void drawSpiderChartFromToios() {
 
   offscreen.beginShape();
 
-<<<<<<< Updated upstream
+
   for (int i = 0; i < shapeCubes; i++) {
     if (cubes[i].isActive) {
       float pointX = map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW);
       float pointY = map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH);
-=======
+
   int[] statCubes = {
     SHO_CUBE,
     DRI_CUBE,
@@ -547,7 +509,6 @@ void drawSpiderChartFromToios() {
     if (cubes[cubeID].isActive) {
       float pointX = map(cubes[cubeID].x, matDimension[0], matDimension[2], 0, surfaceW);
       float pointY = map(cubes[cubeID].y, matDimension[1], matDimension[3], 0, surfaceH);
->>>>>>> Stashed changes
 
       offscreen.vertex(pointX, pointY);
     }
@@ -557,7 +518,6 @@ void drawSpiderChartFromToios() {
 }
 
 // draw selected player text
-
 void drawSelectedPlayerText() {
   offscreen.fill(0);
   offscreen.noStroke();
