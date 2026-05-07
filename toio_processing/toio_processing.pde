@@ -35,6 +35,7 @@ int dataNum = 0;
 int loadingFileID = 0;
 int maxLoadingFileNum = 0;
 
+// data arrays
 String[] player;
 int[] rank;
 int[] ovr;
@@ -44,7 +45,7 @@ int[] pac;
 int[] pas;
 int[] def;
 
-// circle
+// circle params
 float cx = surfaceW / 2;
 float cy = 200;
 float circleSize = 300;
@@ -68,11 +69,16 @@ boolean needsUpdate = true;
 boolean showingMenu = true;
 boolean playerSelected = false;
 
+// vars for handling showing players with the same stat as a particular player
+boolean showSameStatPlayers = false;
+String sameStatTitle = "";
+String[] sameStatNames = new String[3];
+int showingSameStat = -1;
+
 int selectedRow = 0;
 int visibleRows = 8;
 
 boolean[] prevButton;
-
 
 // stat cubes
 int SHO_CUBE = 0;
@@ -82,9 +88,9 @@ int PAS_CUBE = 3;
 int DEF_CUBE = 4;
 
 // menu control cubes
-int SELECT_CUBE = 5;
-int MENU_CUBE = 6;
-int SCROLL_CUBE = 7;
+int MENU_CUBE = 5;
+int SCROLL_CUBE= 6;
+int SELECT_CUBE = 7;
 
 // rotation tracking
 float lastScrollTheta = 0;
@@ -127,8 +133,7 @@ void loadData() {
 // setup
 
 void settings() {
-  fullScreen(P3D, 2);
-  pixelDensity(1);
+  fullScreen(P3D);
 }
 
 void setup() {
@@ -189,11 +194,11 @@ void drawBackground() {
   offscreen.textSize(12);
 
   String[] labels = {
-    "Shooting",
-    "Dribbling",
-    "Pace",
-    "Passing",
-    "Defending"
+    "Shooting”,
+    "Dribbling”,
+    "Pace”,
+    "Passing”,
+    "Defending”
   };
 
   float labelRadius = r + 30;
@@ -226,30 +231,30 @@ void projectData() {
     float endY = 0;
 
     switch(i) {
-    case 0:
-      endX = map(sho[p], 0, 100, cx, px);
-      endY = map(sho[p], 0, 100, cy, py);
-      break;
+      case 0:
+        endX = map(sho[p], 0, 100, cx, px);
+        endY = map(sho[p], 0, 100, cy, py);
+        break;
 
-    case 1:
-      endX = map(dri[p], 0, 100, cx, px);
-      endY = map(dri[p], 0, 100, cy, py);
-      break;
+      case 1:
+        endX = map(dri[p], 0, 100, cx, px);
+        endY = map(dri[p], 0, 100, cy, py);
+        break;
 
-    case 2:
-      endX = map(pac[p], 0, 100, cx, px);
-      endY = map(pac[p], 0, 100, cy, py);
-      break;
+      case 2:
+        endX = map(pac[p], 0, 100, cx, px);
+        endY = map(pac[p], 0, 100, cy, py);
+        break;
 
-    case 3:
-      endX = map(pas[p], 0, 100, cx, px);
-      endY = map(pas[p], 0, 100, cy, py);
-      break;
+      case 3:
+        endX = map(pas[p], 0, 100, cx, px);
+        endY = map(pas[p], 0, 100, cy, py);
+        break;
 
-    case 4:
-      endX = map(def[p], 0, 100, cx, px);
-      endY = map(def[p], 0, 100, cy, py);
-      break;
+      case 4:
+        endX = map(def[p], 0, 100, cx, px);
+        endY = map(def[p], 0, 100, cy, py);
+        break;
     }
 
     int tx = int(map(endX, 0, surfaceW, matDimension[0], matDimension[2]));
@@ -261,7 +266,7 @@ void projectData() {
       cubes[cubeID].target(tx, ty, cubes[cubeID].theta);
     }
   }
-  needsUpdate = false;
+  //needsUpdate = false;
 }
 
 void moveStatCubesToMenuEdges() {
@@ -278,6 +283,8 @@ void moveStatCubesToMenuEdges() {
   for (int i = 0; i < statCubes.length; i++) {
     int cubeID = statCubes[i];
 
+  // so cubes will move to the edges by extending their original paths
+
     float surfaceX = cx + cos(angles[i]) * (r + 55);
     float surfaceY = cy + sin(angles[i]) * (r + 55);
 
@@ -287,7 +294,7 @@ void moveStatCubesToMenuEdges() {
     int targetMatX = int(map(surfaceX, 0, surfaceW, matDimension[0], matDimension[2]));
     int targetMatY = int(map(surfaceY, 0, surfaceH, matDimension[1], matDimension[3]));
 
-    if (cubes[cubeID].isActive && cubes[cubeID].x != targetMatX + 5 && cubes[cubeID].y != targetMatY) {
+    if (cubes[cubeID].isActive) {
       cubes[cubeID].target(targetMatX, targetMatY, cubes[cubeID].theta);
     }
   }
@@ -312,14 +319,17 @@ void draw() {
       moveStatCubesToMenuEdges();
     }
   } else {
-    if (needsUpdate) {
-      projectData();
-    }
+    projectData();
     drawBackground();
     drawSpiderChartFromToios();
-    drawSelectedPlayerText();
-  }
+    if (!showSameStatPlayers) {
+      drawSelectedPlayerText();
+    }
 
+  }
+  if (!showingMenu && showSameStatPlayers) {
+    drawSameStatPlayers();
+  }
   offscreen.endDraw();
 
   background(0);
@@ -341,8 +351,6 @@ void drawMenu() {
 
   offscreen.textFont(regularFont);
   offscreen.textSize(14);
-  //offscreen.text("Cube 1 = up | Cube 2 = down", surfaceW / 2, 62);
-  //offscreen.text("Click Cube 0 to select / open menu", surfaceW / 2, 78);
   offscreen.textSize(10);
   offscreen.text("Rotate Cube 7 to scroll players", surfaceW / 2, 62);
   offscreen.text("Cube 5 = select | Cube 6 = menu", surfaceW / 2, 78);
@@ -394,28 +402,155 @@ void drawMenu() {
 }
 
 // controls
-
 void handleControls() {
+  // handle scrolling on the menu
   detectScrollTwist();
 
+  if (!showingMenu) {
+    checkStatCubeClicks();
+  }
+
+  // handle showing the menu
   if (cubeClicked(MENU_CUBE)) {
-    if (showingMenu) {
-      showingMenu = false;
-      playerSelected = true;
-      needsUpdate = true;
-    } else {
+    if (!showingMenu) {
       showingMenu = true;
       playerSelected = false;
       needsUpdate = true;
     }
-    showingMenu = !showingMenu;
-    playerSelected = !showingMenu;
   }
 
+  // if we’re on the menu, handle player selection
   if (showingMenu && cubeClicked(SELECT_CUBE)) {
     showingMenu = false;
     playerSelected = true;
+    needsUpdate = true;
   }
+
+}
+
+void checkStatCubeClicks() {
+  //println("checking stat clicks”);
+  if (cubeClicked(SHO_CUBE)) {
+    if (showingSameStat == SHO_CUBE) {
+      showSameStatPlayers = false;
+      showingSameStat = -1;
+      return;
+    }
+
+    findSameStatPlayers("SHO", sho[selectedRow]);
+    showingSameStat = SHO_CUBE;
+    println("found for sho");
+  }
+
+  if (cubeClicked(DRI_CUBE)) {
+    if (showingSameStat == DRI_CUBE) {
+      showSameStatPlayers = false;
+      showingSameStat = -1;
+      return;
+    }
+
+    findSameStatPlayers("DRI", dri[selectedRow]);
+    showingSameStat = DRI_CUBE;
+    println("found for dri");
+  }
+
+  if (cubeClicked(PAC_CUBE)) {
+    if (showingSameStat == PAC_CUBE) {
+      showSameStatPlayers = false;
+      showingSameStat = -1;
+      return;
+    }
+    findSameStatPlayers("PAC", pac[selectedRow]);
+    showingSameStat = PAC_CUBE;
+    println("found for pac");
+  }
+
+  if (cubeClicked(PAS_CUBE)) {
+    if (showingSameStat == PAS_CUBE) {
+      showSameStatPlayers = false;
+      showingSameStat = -1;
+      return;
+    }
+    findSameStatPlayers("PAS", pas[selectedRow]);
+    showingSameStat = PAS_CUBE;
+    println("found for pas");
+  }
+
+  if (cubeClicked(DEF_CUBE)) {
+    if (showingSameStat == DEF_CUBE) {
+      showSameStatPlayers = false;
+      showingSameStat = -1;
+      return;
+    }
+    findSameStatPlayers("DEF", def[selectedRow]);
+    showingSameStat = DEF_CUBE;
+    println("found for def");
+  }
+}
+
+void findSameStatPlayers(String statName, int statValue) {
+  sameStatTitle = statName + " = " + statValue;
+
+  int found = 0;
+
+  for (int i = 0; i < dataNum; i++) {
+    if (i == selectedRow) {
+      continue;
+    }
+
+    int value = 0;
+
+    if (statName.equals("SHO")) value = sho[i];
+    if (statName.equals("DRI")) value = dri[i];
+    if (statName.equals("PAC")) value = pac[i];
+    if (statName.equals("PAS")) value = pas[i];
+    if (statName.equals("DEF")) value = def[i];
+
+    if (value == statValue) {
+      sameStatNames[found] = player[i];
+      println("found ");
+      println(player[i]);
+      println("");
+      found++;
+
+      if (found >= 3) {
+        break;
+      }
+    }
+  }
+
+  while (found < 3) {
+    sameStatNames[found] = "No match";
+    found++;
+  }
+
+  showSameStatPlayers = true;
+}
+
+void drawSameStatPlayers() {
+  println("in SameStatPlayers()");
+  if (!showSameStatPlayers) {
+    return;
+  }
+
+  offscreen.fill(255, 255, 255, 220);
+  offscreen.stroke(0);
+  offscreen.strokeWeight(2);
+  offscreen.rect(45, surfaceH/2, surfaceW - 90, 95, 10);
+
+  offscreen.fill(0);
+  offscreen.noStroke();
+  offscreen.textAlign(CENTER, CENTER);
+
+  offscreen.textFont(boldFont);
+  offscreen.textSize(12);
+  offscreen.text("Same stat players: " + sameStatTitle, surfaceW / 2, surfaceH/2 + 10);
+
+  offscreen.textFont(regularFont);
+  offscreen.textSize(10);
+  offscreen.text(sameStatNames[0], surfaceW / 2, surfaceH/2 + 36);
+  offscreen.text(sameStatNames[1], surfaceW / 2, surfaceH/2 + 50);
+  offscreen.text(sameStatNames[2], surfaceW / 2, surfaceH/2 + 64);
 }
 
 void detectScrollTwist() {
@@ -485,26 +620,29 @@ void drawSpiderChartFromToios() {
   offscreen.strokeWeight(4);
 
   offscreen.beginShape();
-
+  int firstX = 0;
+  int firstY = 0;
 
   for (int i = 0; i < shapeCubes; i++) {
     if (cubes[i].isActive) {
-      float pointX = map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW);
-      float pointY = map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH);
+      int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
+      int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
 
-  int[] statCubes = {
-    SHO_CUBE,
-    DRI_CUBE,
-    PAC_CUBE,
-    PAS_CUBE,
-    DEF_CUBE
-  };
+       offscreen.vertex(pointX, pointY);
 
+       // preserve the first vertex so we can close the shape
+       if (i == 0) {
+        firstX = pointX;
+        firstY = pointY;
+      } else if (i == 4) {
+        offscreen.vertex(firstX, firstY);
+      }
+    }
+   }
 
   offscreen.endShape(CLOSE);
-  }
- }
 }
+
 
 // draw selected player text
 void drawSelectedPlayerText() {
@@ -528,5 +666,5 @@ void drawSelectedPlayerText() {
     " | PAS " + pas[selectedRow] +
     " | DEF " + def[selectedRow];
 
-  offscreen.text(statText, surfaceW / 2, 365);
+  offscreen.text(statText, surfaceW / 2, 380);
 }
