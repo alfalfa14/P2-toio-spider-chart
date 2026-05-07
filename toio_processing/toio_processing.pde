@@ -134,6 +134,7 @@ void loadData() {
 
 void settings() {
   fullScreen(P3D);
+  pixelDensity(1);
 }
 
 void setup() {
