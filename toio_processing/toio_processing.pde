@@ -194,11 +194,11 @@ void drawBackground() {
   offscreen.textSize(12);
 
   String[] labels = {
-    "Shooting”,
-    "Dribbling”,
-    "Pace”,
-    "Passing”,
-    "Defending”
+    "Shooting",
+    "Dribbling",
+    "Pace",
+    "Passing",
+    "Defending"
   };
 
   float labelRadius = r + 30;
@@ -231,30 +231,30 @@ void projectData() {
     float endY = 0;
 
     switch(i) {
-      case 0:
-        endX = map(sho[p], 0, 100, cx, px);
-        endY = map(sho[p], 0, 100, cy, py);
-        break;
+    case 0:
+      endX = map(sho[p], 0, 100, cx, px);
+      endY = map(sho[p], 0, 100, cy, py);
+      break;
 
-      case 1:
-        endX = map(dri[p], 0, 100, cx, px);
-        endY = map(dri[p], 0, 100, cy, py);
-        break;
+    case 1:
+      endX = map(dri[p], 0, 100, cx, px);
+      endY = map(dri[p], 0, 100, cy, py);
+      break;
 
-      case 2:
-        endX = map(pac[p], 0, 100, cx, px);
-        endY = map(pac[p], 0, 100, cy, py);
-        break;
+    case 2:
+      endX = map(pac[p], 0, 100, cx, px);
+      endY = map(pac[p], 0, 100, cy, py);
+      break;
 
-      case 3:
-        endX = map(pas[p], 0, 100, cx, px);
-        endY = map(pas[p], 0, 100, cy, py);
-        break;
+    case 3:
+      endX = map(pas[p], 0, 100, cx, px);
+      endY = map(pas[p], 0, 100, cy, py);
+      break;
 
-      case 4:
-        endX = map(def[p], 0, 100, cx, px);
-        endY = map(def[p], 0, 100, cy, py);
-        break;
+    case 4:
+      endX = map(def[p], 0, 100, cx, px);
+      endY = map(def[p], 0, 100, cy, py);
+      break;
     }
 
     int tx = int(map(endX, 0, surfaceW, matDimension[0], matDimension[2]));
@@ -283,7 +283,7 @@ void moveStatCubesToMenuEdges() {
   for (int i = 0; i < statCubes.length; i++) {
     int cubeID = statCubes[i];
 
-  // so cubes will move to the edges by extending their original paths
+    // so cubes will move to the edges by extending their original paths
 
     float surfaceX = cx + cos(angles[i]) * (r + 55);
     float surfaceY = cy + sin(angles[i]) * (r + 55);
@@ -325,7 +325,6 @@ void draw() {
     if (!showSameStatPlayers) {
       drawSelectedPlayerText();
     }
-
   }
   if (!showingMenu && showSameStatPlayers) {
     drawSameStatPlayers();
@@ -419,17 +418,16 @@ void handleControls() {
     }
   }
 
-  // if we’re on the menu, handle player selection
+  // if we're on the menu, handle player selection
   if (showingMenu && cubeClicked(SELECT_CUBE)) {
     showingMenu = false;
     playerSelected = true;
     needsUpdate = true;
   }
-
 }
 
 void checkStatCubeClicks() {
-  //println("checking stat clicks”);
+  //println("checking stat clicks");
   if (cubeClicked(SHO_CUBE)) {
     if (showingSameStat == SHO_CUBE) {
       showSameStatPlayers = false;
@@ -628,17 +626,17 @@ void drawSpiderChartFromToios() {
       int pointX = int(map(cubes[i].x, matDimension[0], matDimension[2], 0, surfaceW));
       int pointY = int(map(cubes[i].y, matDimension[1], matDimension[3], 0, surfaceH));
 
-       offscreen.vertex(pointX, pointY);
+      offscreen.vertex(pointX, pointY);
 
-       // preserve the first vertex so we can close the shape
-       if (i == 0) {
+      // preserve the first vertex so we can close the shape
+      if (i == 0) {
         firstX = pointX;
         firstY = pointY;
       } else if (i == 4) {
         offscreen.vertex(firstX, firstY);
       }
     }
-   }
+  }
 
   offscreen.endShape(CLOSE);
 }
